@@ -17,6 +17,8 @@ function headers.get()
     }, cookie and {
         ["Cookie"] = cookie.str,
         ["x-csrftoken"] = cookie.csrftoken,
+        ["random-uuid"] = cookie.random_uuid,
+        ["uuuserid"] = cookie.uuuserid,
     } or {})
 end
 

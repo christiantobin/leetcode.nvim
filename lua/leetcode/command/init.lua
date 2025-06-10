@@ -40,11 +40,14 @@ function cmd.cookie_prompt(cb)
             row = "50%",
             col = "50%",
         },
-        size = 100,
+        size = {
+            width = 120,
+            height = 15,
+        },
         border = {
             style = "rounded",
             text = {
-                top = (" %s "):format(t("Enter cookie")),
+                top = (" %s "):format(t("Enter authentication data")),
                 top_align = "left",
             },
         },
@@ -56,6 +59,7 @@ function cmd.cookie_prompt(cb)
     local NuiInput = require("nui.input")
     local input = NuiInput(popup_options, {
         prompt = " 󰆘 ",
+        default_value = "cookie\n\nrandom-uuid\n\nuuuserid\n",
         on_submit = function(value)
             local err = cookie.set(value)
 

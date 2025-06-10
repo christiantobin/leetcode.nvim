@@ -10,6 +10,8 @@ local hist = {}
 ---@class lc.cache.Cookie
 ---@field csrftoken string
 ---@field leetcode_session string
+---@field random_uuid string
+---@field uuuserid string
 ---@field str string
 
 ---@class lc.Cookie
@@ -86,17 +88,46 @@ end
 ---
 ---@return lc.cache.Cookie|nil, string|nil
 function Cookie.parse(str)
-    local csrf = str:match("csrftoken=([^;]+)")
+    local parts = vim.split(str, "\n")
+    local cookie_line = ""
+    local random_uuid = ""
+    local uuuserid = ""
+    
+    for _, line in ipairs(parts) do
+        if line:match("^cookie") then
+            cookie_line = line:gsub("^cookie%s*", "")
+        elseif line:match("^random%-uuid") then
+            random_uuid = line:gsub("^random%-uuid%s*", "")
+        elseif line:match("^uuuserid") then
+            uuuserid = line:gsub("^uuuserid%s*", "")
+        end
+    end
+    
+    if cookie_line == "" then
+        cookie_line = str
+    end
+    
+    local csrf = cookie_line:match("csrftoken=([^;]+)")
     if not csrf or csrf == "" then
         return nil, "Bad csrf token format"
     end
 
-    local ls = str:match("LEETCODE_SESSION=([^;]+)")
+    local ls = cookie_line:match("LEETCODE_SESSION=([^;]+)")
     if not ls or ls == "" then
         return nil, "Bad leetcode session token format"
     end
 
-    return { csrftoken = csrf, leetcode_session = ls, str = str }
+    if random_uuid == "" or uuuserid == "" then
+        return nil, "Missing random-uuid or uuuserid"
+    end
+
+    return { 
+        csrftoken = csrf, 
+        leetcode_session = ls, 
+        random_uuid = random_uuid,
+        uuuserid = uuuserid,
+        str = cookie_line 
+    }
 end
 
 return Cookie
